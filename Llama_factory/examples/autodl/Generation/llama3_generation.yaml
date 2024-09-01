@@ -1,0 +1,4 @@
+model_name_or_path: /root/autodl-tmp/llama3
+# adapter_name_or_path: saves/llama_msmarco_train_1w_3epoch/
+template: llama3
+finetuning_type: lora

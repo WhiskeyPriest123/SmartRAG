@@ -13,10 +13,12 @@ if __name__=='__main__':
     parse.add_argument("--checkpoint",type=str)
     parse.add_argument("--queries_file",type=str)
     parse.add_argument("--index_name",type=str)
+    parse.add_argument("--n_gpu",type=int)
+
     args = parse.parse_args()
     
     
-    with Run().context(RunConfig(nranks=1, experiment=args.experiment_name)):
+    with Run().context(RunConfig(nranks=args.n_gpu, experiment=args.experiment_name)):
         config = ColBERTConfig(
             root=args.root,
             checkpoint=args.checkpoint

@@ -15,11 +15,13 @@ if __name__=='__main__':
     parse.add_argument("--triples_file",type=str)
     parse.add_argument("--queries_file",type=str)
     parse.add_argument("--collection_file",type=str)
+    parse.add_argument("--n_gpu",type=int)
+
     args = parse.parse_args()
     
 
 
-    with Run().context(RunConfig(nranks=1, experiment=args.experiment_name)):
+    with Run().context(RunConfig(nranks=args.n_gpu, experiment=args.experiment_name)):
 
         config = ColBERTConfig(
             bsize=args.bsize,

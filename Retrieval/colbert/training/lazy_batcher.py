@@ -50,7 +50,6 @@ class LazyBatcher(): # patch here
             pids = pids[:self.nway]
             
 
-            query = int(query) # here patch
             
             query = self.queries[query]
             

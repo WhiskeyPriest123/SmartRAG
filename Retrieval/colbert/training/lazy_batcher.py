@@ -50,7 +50,8 @@ class LazyBatcher(): # patch here
             pids = pids[:self.nway]
             
 
-            
+            print(query)
+            print(pids)
             query = self.queries[query]
             
             
@@ -61,6 +62,7 @@ class LazyBatcher(): # patch here
             # patch here
             
             scores = []
+            
                 
 
             passages = [self.collection[int(pid)] for pid in pids] # here patch，pids有俩元素

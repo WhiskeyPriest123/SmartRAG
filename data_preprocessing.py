@@ -16,6 +16,9 @@ if __name__ == '__main__':
     train_rel_file = 'Dataset/DROP/train.json'
     val_rel_file = 'Dataset/DROP/val.json'
     
+    llm_file = 'Dataset/DROP/drop.json'
+    llm_extra_file = 'Dataset/DROP/drop_extra.json'
+    
     train_data = read_parquet(train_file)
     val_data = read_parquet(val_file)
     document_dict = {}
@@ -23,7 +26,9 @@ if __name__ == '__main__':
     d2answer = {}
     train_q2d = []
     val_q2d = []
-    
+    llm_data = []
+    llm_extra_data = []
+
 
     for data in tqdm(train_data):
         d_id = data['section_id'] 
@@ -34,6 +39,25 @@ if __name__ == '__main__':
         document_dict[d_id] = document
         query_dict[q_id] = query
         d2answer[d_id] = answer
+        
+        llm_extra_data.append({
+            'd_id':d_id,
+            'q_id':q_id,
+            'instruction':query,
+            'input':document,
+            'output':str(answer[0])
+        })
+        
+        llm_data.append({
+            'd_id':d_id,
+            'q_id':q_id,
+            'instruction':query,
+            'input':'',
+            'output':str(answer[0])
+        })
+        
+        
+        
         
         train_q2d.append([q_id, d_id])
     
@@ -72,12 +96,13 @@ if __name__ == '__main__':
     
     
 
-    append_to_tsv(document_file,document_dict)
-    append_to_tsv(query_file,query_dict)
-    append_to_tsv(answer_file,d2answer)
+    # append_to_tsv(document_file,document_dict)
+    # append_to_tsv(query_file,query_dict)
+    # append_to_tsv(answer_file,d2answer)
 
-    write_list_to_json_line_by_line(train_rel_file, train_q2d)
-    write_list_to_json_line_by_line(val_rel_file, val_q2d)
+    # write_list_to_json_line_by_line(train_rel_file, train_q2d)
+    # write_list_to_json_line_by_line(val_rel_file, val_q2d)
 
-    
+    append_to_json(llm_file, llm_data)
+    append_to_json(llm_extra_file, llm_extra_data)    
     

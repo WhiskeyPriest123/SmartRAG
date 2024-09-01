@@ -1,1 +1,1 @@
-python Retrieval/training.py --experiment_name tuned_colbert --bsize 128 --max_steps 1000 --root root --checkpoint C:\\Users\\tzy\\Desktop\\colbert_msmarco --n_gpu 1 --triples_file Dataset/DROP/train.json --queries_file Dataset/DROP/query.tsv --collection_file Dataset/DROP/document.tsv
+python Retrieval/training.py --experiment_name tuned_colbert --bsize 128 --max_steps 1000 --root root --checkpoint /root/autodl-tmp/colbert_msmarco --n_gpu 1 --triples_file Dataset/DROP/train.json --queries_file Dataset/DROP/query.tsv --collection_file Dataset/DROP/document.tsv

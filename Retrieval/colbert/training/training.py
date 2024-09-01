@@ -1,12 +1,8 @@
 import time
 import torch
 import random
-import javalang
 import torch.nn as nn
-from javalang.ast import Node
 
-from anytree import AnyNode, RenderTree
-from anytree.iterators import PreOrderIter
 import numpy as np
 import csv
 import ast
@@ -26,148 +22,6 @@ from colbert.modeling.reranker.electra import ElectraReranker
 from colbert.utils.utils import print_message
 from colbert.training.utils import print_progress, manage_checkpoints
 
-
- 
-def get_token(node):
-    if isinstance(node, str):
-        return node
-    elif isinstance(node, set):
-        return 'Modifier'
-    elif isinstance(node, Node):
-        return node.__class__.__name__
-    return ''
-
-def get_child(root):
-    if isinstance(root, Node):
-        children = root.children
-    elif isinstance(root, set):
-        children = list(root)
-    else:
-        children = []
-    def expand(nested_list):
-        for item in nested_list:
-            if isinstance(item, list):
-                for sub_item in expand(item):
-                    yield sub_item
-            elif item:
-                yield item
-    return list(expand(children))
-
-def createtree(root,node,nodelist,parent=None):
-    id = len(nodelist)
-    token, children = get_token(node), get_child(node)
-    if id == 0:
-        root.token=token
-        root.data=node
-    else:
-        newnode=AnyNode(id=id,token=token,data=node,parent=parent)
-    nodelist.append(node)
-    for child in children:
-        if id == 0:
-            createtree(root,child, nodelist, parent=root)
-        else:
-            createtree(root,child, nodelist, parent=newnode)
-
-def count_nodes(node):
-    return 1 + sum(count_nodes(child) for child in ast.iter_child_nodes(node))
-
-def build_adjacency_matrix(node, node_count, mapping=None, matrix=None, parent_index=-1):
-    if mapping is None:
-        mapping = {}
-    if matrix is None:
-        matrix = np.zeros((node_count, node_count), dtype=int)
-
-    node_index = mapping.setdefault(node, len(mapping))
-
-    if parent_index != -1:
-        matrix[parent_index, node_index] = 1
-
-    for child in ast.iter_child_nodes(node):
-        build_adjacency_matrix(child, node_count, mapping, matrix, node_index)
-
-    return matrix
-# def read_tsv(filename):
-#     result = []
-#     with open(filename, 'r', encoding='utf-8') as file:
-#         tsv_reader = csv.reader(file, delimiter='\t')
-#         for row in tsv_reader:
-#             print(type(row))
-#             print(len(row))
-#             print(row[0])
-#             print(row[1])
-#             code = row[1]
-#             parsed_tree = ast.parse(code)
-#             print(parsed_tree)
-#             quit()
-#             result.append(row)
-#     return result
-
-def convert_java_ast(code_str):
-    code_str = 'public class MyClass { ' + code_str + '} '
-    # try:
-    programtokens=javalang.tokenizer.tokenize(code_str)
-    parsed_tree = javalang.parse.Parser(programtokens)
-    programast=parsed_tree.parse_member_declaration()
-
-    # except Exception as e:
-        
-    #     return -1
-    
-    tree = programast
-    nodelist = []
-    newtree=AnyNode(id=0,token=None,data=None)
-    createtree(newtree, tree, nodelist)
-    newtree = build_adjacency_matrix_java(newtree)
-    
-    return newtree
-
-def build_adjacency_matrix_java(root):
-    nodes = list(PreOrderIter(root))
-    index = {node: i for i, node in enumerate(nodes)}
-    n = len(nodes)
-    adjacency_matrix = np.zeros((n, n), dtype=int)
-    for node in nodes:
-        for child in node.children:
-            i, j = index[node], index[child]
-            adjacency_matrix[i][j] = 1
-    
-    return adjacency_matrix
-
-def read_json(filename):
-    with open(filename, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-    code_list = []
-    for i in data:
-        code_list.append(i['instruction'])
-    count = 0
-    result = {}
-    for code in tqdm(code_list):
-        if 'python' in filename:
-            try:
-                tree = ast.parse(code)
-                node_count = count_nodes(tree)
-                adjacency_matrix = build_adjacency_matrix(tree,node_count)
-            except:
-                adjacency_matrix = np.zeros((1, 1))
-        elif 'java' in filename:
-                # print("true")
-            try:
-                adjacency_matrix = convert_java_ast(code)
-            except:
-                print("error")
-                adjacency_matrix = np.zeros((1, 1))
-                # print(adjacency_matrix.shape)
-            # except Exception as e:
-            #     # print("false")
-            #     print(e)
-            #     adjacency_matrix = np.zeros((1, 1))
-        else:
-            assert 1==2
-
-        result[str(count)] = adjacency_matrix
-        count += 1
-    
-    return result
 
 
 def train(config: ColBERTConfig, triples, queries=None, collection=None):
@@ -238,7 +92,7 @@ def train(config: ColBERTConfig, triples, queries=None, collection=None):
     count_out_looper = 0
     count_in_looper = 0
         
-    ast_data = read_json('/root/ColBERT/data/java_merge_train_tree/java_train.json') # json file here
+    # ast_data = read_json('/root/ColBERT/data/java_merge_train_tree/java_train.json') # json file here
     # ast_data = read_json('/root/ColBERT/data/java_train_pseudo_incontext/java_train.json') # json file here
 
 
@@ -261,15 +115,15 @@ def train(config: ColBERTConfig, triples, queries=None, collection=None):
                     queries, passages, target_scores, pids_list = batch
                     
                     
-                    for id,value in enumerate(pids_list):
-                        # print(id, value)
-                        pids_list[id][0] = ast_data[value[0]]
-                        pids_list[id][1] = ast_data[value[1]]
+                    # for id,value in enumerate(pids_list):
+                    #     # print(id, value)
+                    #     pids_list[id][0] = ast_data[value[0]]
+                    #     pids_list[id][1] = ast_data[value[1]]
 
                     
                     
                     # queries, passages, target_scores = batch
-                    encoding = [queries, passages, pids_list]
+                    encoding = [queries, passages]
                     
                     
                     

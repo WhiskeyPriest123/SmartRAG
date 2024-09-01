@@ -40,24 +40,7 @@ def adjust_shape(tensor, target_shape):
     return tensor
 
 
-# GCN网络
-class GCN(nn.Module):
-    def __init__(self, input_feat_dim, hidden_dim, output_dim, num_nodes):
-        super(GCN, self).__init__()
-        self.num_nodes = num_nodes
-        # 我们假设图卷积层后有一个隐含层
-        self.gc1 = GraphConvolution(input_feat_dim, hidden_dim)
-        self.gc2 = GraphConvolution(hidden_dim, output_dim)
 
-    def forward(self, x, adj): 
-        
-        # 输入维度是[批量大小, 节点数, 特征维数]
-        x = x.view(-1, self.num_nodes, x.size(2))
-        # 图卷积层
-        x = F.relu(self.gc1(x, adj))
-        x = self.gc2(x, adj)
-        x = x.view(-1, self.num_nodes * x.size(2)) # 展平输出层，便于后续操作
-        return x
     
 def resize_array(arr, new_shape=(220, 220)):
 
@@ -92,7 +75,6 @@ class ColBERT(BaseColBERT):
         self.pad_token = self.raw_tokenizer.pad_token_id
         
         
-        self.GCN = GCN(128,64,128,220)
 
     @classmethod
     def try_load_torch_extensions(cls, use_gpu):
@@ -129,27 +111,12 @@ class ColBERT(BaseColBERT):
 
         return torch_tensor
 
-    def gcn(self, D, adj,a = 0.001):
-        if D.shape[1]!=220:
-            D = adjust_shape(D,(D.shape[0],220,D.shape[2]))
-        adj = adj.to(D.device).half()
-        gcn_out = self.GCN(D, adj)
-        gcn_out = gcn_out.reshape(D.shape) * a + D
-        return gcn_out
-
     def forward(self, Q, D,pids_list):
         Q = self.query(*Q)
         D, D_mask = self.doc(*D, keep_dims='return_mask')
         
         pids_list = self.process_pids(pids_list).to(D.device).half()
-        gcn_out = self.GCN(D, pids_list)
-        gcn_out = gcn_out.reshape(D.shape) * 0.01
-        D = gcn_out + D
-        # print("gcn_out:",gcn_out)
-        # print("-"*100)
-        # print("D:",D)
-        # quit()
-            
+
         # Repeat each query encoding for every corresponding document.
         Q_duplicated = Q.repeat_interleave(self.colbert_config.nway, dim=0).contiguous()
 

@@ -17,10 +17,9 @@ def load_queries(queries_path):
 
     print_message("#> Loading the queries from", queries_path, "...")
 
-    with open(queries_path) as f:
+    with open(queries_path,encoding='utf-8') as f:
         for line in f:
             qid, query, *_ = line.strip().split('\t')
-            qid = int(qid)
 
             assert (qid not in queries), ("Query QID", qid, "is repeated!")
             queries[qid] = query
@@ -157,13 +156,13 @@ def load_collection(collection_path):
 
     collection = []
 
-    with open(collection_path) as f:
+    with open(collection_path,encoding='utf-8') as f:
         for line_idx, line in enumerate(f):
             if line_idx % (1000*1000) == 0:
                 print(f'{line_idx // 1000 // 1000}M', end=' ', flush=True)
 
             pid, passage, *rest = line.strip('\n\r ').split('\t')
-            assert pid == 'id' or int(pid) == line_idx, f"pid={pid}, line_idx={line_idx}"
+            # assert pid == 'id' or int(pid) == line_idx, f"pid={pid}, line_idx={line_idx}"
 
             if len(rest) >= 1:
                 title = rest[0]

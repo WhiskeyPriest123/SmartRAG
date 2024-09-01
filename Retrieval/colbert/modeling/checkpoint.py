@@ -61,7 +61,6 @@ class Checkpoint(ColBERT):
         
         self.ast_data = []
         
-        # self.GCN = super().GCN()
 
     def query(self, *args, to_cpu=False, **kw_args):
         with torch.no_grad():
@@ -193,10 +192,7 @@ class Checkpoint(ColBERT):
                     mask.append(mask_)
 
                 D, mask = torch.cat(D)[reverse_indices], torch.cat(mask)[reverse_indices]
-                gcn_output = super().gcn(D,ast_list.to(D.device).half())
-                
-                D = gcn_output
-                # D = D + gcn_output
+
                 
                 
                 if mask.shape[1] != 220:

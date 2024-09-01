@@ -13,4 +13,4 @@ SmartRAG
 [Stanford/web_questions · Datasets at Hugging Face](https://huggingface.co/datasets/Stanford/web_questions)
 
 
-**[pre-trained ColBERTv2 checkpoint](https://downloads.cs.stanford.edu/nlp/data/colbert/colbertv2/colbertv2.0.tar.gz)**
+[pre-trained ColBERTv2 checkpoint](https://downloads.cs.stanford.edu/nlp/data/colbert/colbertv2/colbertv2.0.tar.gz)

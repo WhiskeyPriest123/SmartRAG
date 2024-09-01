@@ -11,3 +11,6 @@ SmartRAG
 [ROIM/temporal-alignment-qa · Datasets at Hugging Face](https://huggingface.co/datasets/ROIM/temporal-alignment-qa)
 
 [Stanford/web_questions · Datasets at Hugging Face](https://huggingface.co/datasets/Stanford/web_questions)
+
+
+**[pre-trained ColBERTv2 checkpoint](https://downloads.cs.stanford.edu/nlp/data/colbert/colbertv2/colbertv2.0.tar.gz)**

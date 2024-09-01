@@ -20,3 +20,9 @@ def append_to_tsv(file_path, idstext):
 def append_to_json(file_path, data):
     with open(file_path, 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
+
+def write_list_to_json_line_by_line( file_path,data):
+    with open(file_path, 'w', encoding='utf-8') as f:
+        for item in data:
+            json.dump(item, f, ensure_ascii=False)
+            f.write('\n')

@@ -1,6 +1,7 @@
 
-from Utils.read_file import read_parquet, append_to_tsv, append_to_json
+from Utils.read_file import read_parquet, append_to_tsv, append_to_json, write_list_to_json_line_by_line
 from tqdm import tqdm
+import random
 
 
 
@@ -52,6 +53,22 @@ if __name__ == '__main__':
     
     
     
+    for id, value in enumerate(train_q2d):
+        qid, did = value
+        selected = random.choice(list(document_dict.keys()))
+        while selected == value:
+            selected = random.choice(list(document_dict.keys()))
+        train_q2d[id] = [qid, did, selected]
+    
+    for id, value in enumerate(val_q2d):
+        qid, did = value
+        selected = random.choice(list(document_dict.keys()))
+        while selected == value:
+            selected = random.choice(list(document_dict.keys()))
+        val_q2d[id] = [qid, did, selected]
+    
+    
+    
     
     
 
@@ -59,8 +76,8 @@ if __name__ == '__main__':
     append_to_tsv(query_file,query_dict)
     append_to_tsv(answer_file,d2answer)
 
-    append_to_json(train_rel_file, train_q2d)
-    append_to_json(val_rel_file, val_q2d)
+    write_list_to_json_line_by_line(train_rel_file, train_q2d)
+    write_list_to_json_line_by_line(val_rel_file, val_q2d)
 
     
     
